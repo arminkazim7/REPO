@@ -3,6 +3,7 @@ var player_scene = preload("res://Player.tscn")
 @onready var players_node = $Players
 var local_player: Player = null
 
+
 @rpc("any_peer")
 func spawn_player(peer_id: int, uname: String):
 	var p = player_scene.instantiate()
