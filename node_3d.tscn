@@ -1,0 +1,5 @@
+[gd_scene format=3 uid="uid://mgp02mkor0at"]
+
+[node name="Node3D" type="Node3D"]
+
+[node name="Node" type="Node" parent="."]

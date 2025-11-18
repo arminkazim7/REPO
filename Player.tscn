@@ -1,0 +1,25 @@
+[gd_scene load_steps=3 format=3 uid="uid://dcfyx3omcemb5"]
+
+[ext_resource type="Script" uid="uid://blfsqgobgnlas" path="res://Player.gd" id="1_xhfnw"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_kpjcp"]
+
+[node name="Player" type="Node3D"]
+script = ExtResource("1_xhfnw")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.071311, 0.44116437, 0.41587424)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("CapsuleMesh_kpjcp")
+skeleton = NodePath("")
+
+[node name="Sprite3D" type="Sprite3D" parent="."]
+
+[node name="TextureRect" type="TextureRect" parent="Sprite3D"]
+offset_right = 40.0
+offset_bottom = 40.0
+metadata/_edit_use_anchors_ = true
+
+[node name="UsernameLabel" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
