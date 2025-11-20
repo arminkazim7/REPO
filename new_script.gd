@@ -9,7 +9,6 @@ extends Control
 @onready var start_button = $VBoxContainer/StartButton
 
 var username := "Player"
-var player_usernames := {}   # Dictionary: peer_id → username
 
 @onready var username_input = $VBoxContainer/UsernameInput
 
@@ -26,12 +25,17 @@ func _ready():
 
 func _on_start_button_pressed():
 	if multiplayer.is_server():
+		self.visible = false
+		# Tell clients to change scene first
 		rpc("start_game")
+		# Then change scene locally
+		get_tree().change_scene_to_file("res://GameScene.tscn")
+
 		
-@rpc("reliable", "call_local")
+@rpc("any_peer")
 func start_game():
-	var game_scene = load("res://GameScene.tscn").instantiate()
-	get_tree().root.add_child(game_scene)
+	#var game_scene = load("res://GameScene.tscn").instantiate()
+	get_tree().change_scene_to_file("res://GameScene.tscn")
 	self.visible = false
 	#get_tree().current_scene.call_deferred("queue_free")  # safely free current scene
 	
@@ -45,7 +49,7 @@ func _on_host_pressed():
 
 	status_label.text = "Hosting on port 7777..."
 	print("[Server] Started")
-	player_usernames[1] = username
+	LobbyData.player_usernames[1] = username
 	
 func _on_join_pressed():
 	var address = address_input.text.strip_edges()
@@ -103,17 +107,17 @@ func server_receive_chat_message(sender_id: int, message: String):
 
 @rpc("any_peer", "reliable")
 func register_username(peer_id: int, uname: String):
-	if uname in player_usernames.values():
+	if uname in LobbyData.player_usernames.values():
 		uname += str(randi() % 1000)
 	# Server only: store the username
-	player_usernames[peer_id] = uname
-	print(player_usernames.values())
+	LobbyData.player_usernames[peer_id] = uname
+	print(LobbyData.player_usernames.values())
 	# Broadcast updated username list to all players
-	rpc("update_username_list", player_usernames)
+	rpc("update_username_list", LobbyData.player_usernames)
 	
 @rpc("reliable", "call_local")
 func receive_chat_message(sender_id: int, message: String):
-	var uname = player_usernames.get(sender_id, "Unknown")
+	var uname = LobbyData.player_usernames.get(sender_id, "Unknown")
 	print("hello",message,uname)
 	var line = "[%s]: %s" % [uname, message]
 	chat_log.append_text(line + "\n")
@@ -127,5 +131,5 @@ func receive_chat_message(sender_id: int, message: String):
 	
 @rpc("reliable")
 func update_username_list(name_dict: Dictionary):
-	player_usernames = name_dict
-	print("Updated usernames: ", player_usernames)
+	LobbyData.player_usernames = name_dict
+	print("Updated usernames: ", LobbyData.player_usernames)

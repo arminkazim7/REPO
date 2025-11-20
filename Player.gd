@@ -13,7 +13,6 @@ func _ready():
 	# Only local player sets their camera as current
 	if multiplayer.get_unique_id() == player_id:
 		camera.current = true
-
 	label.text = username
 
 	# Make the label always face the camera
@@ -26,6 +25,7 @@ func _process(delta):
 func _handle_input(delta: float) -> void:
 	var dir = Vector3.ZERO
 	if Input.is_action_pressed("move_forward"):
+		print("player_id",player_id)
 		dir.z -= 1
 	if Input.is_action_pressed("move_back"):
 		dir.z += 1
@@ -33,7 +33,13 @@ func _handle_input(delta: float) -> void:
 		dir.x -= 1
 	if Input.is_action_pressed("move_right"):
 		dir.x += 1
-
+	if Input.is_action_just_pressed("interact"):  # 'P'
+		var game_scene = get_tree().root.get_node("GameScene")
+		if multiplayer.is_server():
+			# If we are the server, just call directly
+			game_scene.request_interact(global_transform.origin)
+		else:
+			game_scene.rpc_id(1, "request_interact", global_transform.origin)
 	if dir != Vector3.ZERO:
 		dir = dir.normalized() * speed * delta
 		translate(dir)
@@ -47,3 +53,13 @@ func _handle_input(delta: float) -> void:
 func update_position(pos: Vector3):
 	if multiplayer.get_unique_id() != player_id:
 		global_transform.origin = pos
+		
+@rpc("authority", "call_local")
+func start_personal_scene():
+	print("Hello will now start flappy bird maybe")
+	#get_tree().change_scene_to_file("res://flappy.tscn")
+
+@rpc("any_peer")
+func request_interact(player_pos: Vector3):
+	# server-side validation here
+	print("hi")

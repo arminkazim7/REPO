@@ -1,10 +1,13 @@
-[gd_scene load_steps=4 format=3 uid="uid://cbfwwp0n0epix"]
+[gd_scene load_steps=6 format=3 uid="uid://cbfwwp0n0epix"]
 
 [ext_resource type="Script" uid="uid://bh8vhhr7vblom" path="res://game_scene.gd" id="1_eqhe0"]
+[ext_resource type="Script" uid="uid://c50oeqwr6u26b" path="res://pc.gd" id="2_k77ap"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_eqhe0"]
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_eqhe0"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_k77ap"]
 
 [node name="GameScene" type="Node3D"]
 script = ExtResource("1_eqhe0")
@@ -24,3 +27,11 @@ mesh = SubResource("BoxMesh_eqhe0")
 mesh = SubResource("PlaneMesh_eqhe0")
 
 [node name="Players" type="Node3D" parent="."]
+
+[node name="PC" type="Node3D" parent="."]
+script = ExtResource("2_k77ap")
+
+[node name="Area3D" type="Area3D" parent="PC"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PC/Area3D"]
+shape = SubResource("BoxShape3D_k77ap")
